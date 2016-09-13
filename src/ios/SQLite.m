@@ -94,6 +94,10 @@ RCT_EXPORT_MODULE();
     [appDBPaths setObject: libs forKey:@"libs"];
     
     NSString *nosync = [libs stringByAppendingPathComponent:@"LocalDatabase"];
+
+    NSString *localStorage = [libs stringByAppendingPathComponent:@"WebKit/LocalStorage"];
+    [appDBPaths setObject: localStorage forKey:@"localStorage"];
+
     NSError *err;
     if ([[NSFileManager defaultManager] fileExistsAtPath: nosync])
     {
@@ -194,7 +198,10 @@ RCT_EXPORT_METHOD(open: (NSDictionary *) options success:(RCTResponseSenderBlock
         dbname = assetFilePath;
       } else {
         NSString *dblocation = options[@"dblocation"];
-        if (dblocation == NULL) dblocation = @"nosync";
+        NSString *location = options[@"location"];
+        if ([options[@"location"] isEqualToString:@"localStorage"])
+          dblocation = @"localStorage";
+        else if (dblocation == NULL) dblocation = @"nosync";
         NSLog(@"target database location: %@", dblocation);
         
         dbname = [self getDBPath:dbfilename at:dblocation];
